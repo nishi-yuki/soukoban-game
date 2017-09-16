@@ -187,20 +187,10 @@ class Goal(Setproperty):
     def _clear(self):
         Wall(self._x, self._y, Goal.clearedicon)
         self.is_clear = True
-        #print('ok1')
         if all([goal.is_clear for goal in Goal.goallist]):
-            #print('ok2')
             clear()
 
-'''
-def anime():
-    for i in range(144):
-        x,y = divmod(i,12)
-        print(x,y)
-        stage[x][y]
-        time.sleep(0.1)
-        stage_print()
-'''
+
 def stage_setup(raw):
     """ステージ生成用関数
     文字列からステージを作成する
@@ -229,14 +219,12 @@ def stage_setup(raw):
     X_MAX = len(raw[0])
     stage = [[empty]*X_MAX for i in range(Y_MAX)]
     for y, line in enumerate(raw):
-        #print(line)
         for x, etype in enumerate(line):
             eledict[etype](x, y)
     
 
 def clear():
     global is_clear
-    #print('ok3')
     is_clear = True
 
 def set_stage(x, y, obj):
@@ -275,7 +263,6 @@ def move(x,y):
             return
         if is_clear:
             stage_print()
-            #print('ok4')
             break
         #print('__' * X_MAX)
         stage_print()
@@ -306,4 +293,5 @@ wwww00nnn00w00
 00000000000000
 00000000000000
     ''')
+    
     move(5,2)

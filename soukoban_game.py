@@ -1,30 +1,71 @@
 #! /usr/bin/env python3
 #-*-coding:utf8;-*-
 import sys
-import termios
-import tty
+import os
 
-LINUX = True
-WINDOWS = False
 CLEAR = '×'
+KEY_OWABI = '申し訳ありませんが、\
+何らかの不具合により、エンターキー\
+を押さないと反応しません。(_ _)'
+HOW_TO_PLAY = '''
+ 〜倉庫番ゲーム〜
+荷物を押して運んで、ゴールに押し込むゲームです。
 
+ 〜画面の説明〜
+O <--我らが主人公です。時間がなくて、のっぺらぼうになってしまいました。(ToT)
+ 
+$ <--これは荷物です。全方向から押せます。重ねても押せます。ただし引けません。
+ 
+# <--これは壁です。チャック・ノリスにしか壊せません。イェイ(^。^)
+ 
+@ <--ゴールです。ここに荷物を押し込んでください。上を通れます。
+ 
+x <--荷物を押し込まれたゴールのなれ果ての姿です。すべてのゴールをこれに変えてください。
+ 
+ 〜操作説明〜
+よくあるfpsゲームと同じ方法で移動します。
+
+     w
+     ^
+     |
+s <- O -> d
+     |
+     +
+     s
+     
+hキーで、この説明を表示します。
+xキーで、強制終了します。積んだとき用
+
+上に続いています。スクロールして見ていってください'''
 
 def getkeyfunc():
-    if LINUX:
-        fd = sys.stdin.fileno()
-        pr = termios.tcgetattr(fd)
-        def linuxgetkey():
-            'POSIXキー入力受付'
-            try:
-                tty.setcbreak(sys.stdin.fileno())
-                result = sys.stdin.read(1)
-                return result
-            finally:
-                termios.tcsetattr(fd, termios.TCSANOW, pr)
-        return linuxgetkey
-    elif WINDOWS:
-        print('未対応です')
-        exit()
+    name = os.name
+    try:
+        if name == 'posix':
+            import termios, tty
+            fd = sys.stdin.fileno()
+            pr = termios.tcgetattr(fd)
+            def linuxgetkey():
+                'Unixキー入力受付'
+                try:
+                    tty.setcbreak(sys.stdin.fileno())
+                    result = sys.stdin.read(1)
+                    return result
+                finally:
+                    termios.tcsetattr(fd, termios.TCSANOW, pr)
+            return linuxgetkey
+        elif name =='nt':
+            import msvcrt
+            #print('未対応です')
+            return msvcrt.getwch
+        #os対応ここまで
+        else:
+            print(KEY_OWABI)
+            return input
+    except:
+        #最後の希望
+        print(KEY_OWABI)
+        return input
 
 #移動定義クラス
 class Empty():
@@ -259,8 +300,11 @@ def move(x,y):
             player.down()
         elif cmd == 'd':
             player.right()
-        elif cmd == 'q':
+        elif cmd == 'x':
             return
+        elif cmd == 'h':
+            print(HOW_TO_PLAY)
+            input('エンターキーを押してください')
         if is_clear:
             stage_print()
             break
@@ -293,5 +337,6 @@ wwww00nnn00w00
 00000000000000
 00000000000000
     ''')
-    
+    print('ゲーム中にhキーで、ヘルプが出ます')
+    input('ゲームを開始します。エンターキーを押してください')
     move(5,2)
